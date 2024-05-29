@@ -46,8 +46,8 @@ namespace WebAPI.WebAPI.Controllers
         {
             Animal createdAnimal = new Animal { Name = name, Color = color , Age = age};
             animals.Add(createdAnimal);
-            return CreatedAtAction("CreateAnimal", createdAnimal); 
-            // return 
+            //return CreatedAtAction("CreateAnimal", createdAnimal); 
+            return Ok();
             
         }
         
