@@ -27,7 +27,7 @@ namespace WebAPI.WebAPI.Controllers
         [HttpGet(Name = "GetAnimal")]
         public  IEnumerable<Animal> Get()    
         {
-            Console.WriteLine(animals.Count());
+            // TODO if list empty return something
             return animals;
         }
         [HttpDelete(Name = "DeleteAnimal")]
@@ -41,12 +41,13 @@ namespace WebAPI.WebAPI.Controllers
         }
         [HttpPost(Name = "CreateAnimal")]
         //[ProducesResponseType(StatusCodes.Status201Created)]
-
+        // todo HttpResponseMessage
         public ActionResult<Animal> Create(string name, string color, int age)
         {
             Animal createdAnimal = new Animal { Name = name, Color = color , Age = age};
             animals.Add(createdAnimal);
-            return Ok();  
+            return CreatedAtAction("CreateAnimal", createdAnimal); 
+            // return 
             
         }
         
