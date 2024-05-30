@@ -1,22 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Eventing.Reader;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 namespace WebAPI.WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/api/[Controller]/[Action]")]
     public class AnimalController : ControllerBase
     {
-        private static readonly List<string> animalNames = new List<string> { "Pig", "Dog", "Cat", "Bird", "Rabbit" };
-        private static readonly List<string> colors = new List<string> { "Red", "Blue", "Black", "Green", "Orange" };
-        public static List<Animal> animals = new List<Animal> { new Animal {
-            id = 1,
-            Name = animalNames[Random.Shared.Next(animalNames.Count)],
+        private static readonly List<string> _animalNames = new List<string> { "Pig", "Dog", "Cat", "Bird", "Rabbit" };
+        private static readonly List<string> _colors = new List<string> { "Red", "Blue", "Black", "Green", "Orange" };
+        public static List<Animal> Animals = new List<Animal> { }; 
+        /*
+         * public static List<Animal> Animals = new List<Animal> { new Animal {
+            Id = Guid.NewGuid(),
+            Name = _animalNames[Random.Shared.Next(_animalNames.Count)],
             Age = Random.Shared.Next(12),
-            Color = colors[Random.Shared.Next(colors.Count)]
+            Color = _colors[Random.Shared.Next(_colors.Count)]
             },
             new Animal
-            {   id = 2,
+            {   Id = Guid.NewGuid(),
                 Name = "THIS NAME DOESNT CHANGE",
                 Age = 12,
                 Color = "THIS COLOR DOESNT CHANGE"
@@ -24,30 +28,48 @@ namespace WebAPI.WebAPI.Controllers
 
 
         };
+        */
         [HttpGet(Name = "GetAnimal")]
-        public  IEnumerable<Animal> Get()    
+        public  IActionResult GetAnimal()    
         {
             // TODO if list empty return something
-            return animals;
+            if (!Animals.Any()) {
+                return new ObjectResult("No animals were found");
+
+            } else
+            {
+                return new ObjectResult(Animals);
+            }
+
         }
         [HttpDelete(Name = "DeleteAnimal")]
-        public object  Delete(int id)
-        {   if (id > animals.Count)
-            {
-                return StatusCode(400);
+        
+        public IActionResult DeleteAnimal(Guid Id)
+        {
+            try {
+                if (!Animals.Any())
+                {
+                    return new ObjectResult(StatusCode(400,"Nothing to delete"));
+                }
+                // if it doesnt match add a return that says so
+                Animals.RemoveAll((Animal item) => item.Id == Id);
+                return new ObjectResult(Animals);
+                }
+            catch (Exception ex) {
+                return StatusCode(500, ex);
             }
-            animals.RemoveAll((Animal item) => item.id == id);
-            return animals;
+;
+
         }
         [HttpPost(Name = "CreateAnimal")]
         //[ProducesResponseType(StatusCodes.Status201Created)]
         // todo HttpResponseMessage
-        public ActionResult<Animal> Create(string name, string color, int age)
+        public ActionResult<Animal> CreateAnimal(string name, string color, int age)
         {
-            Animal createdAnimal = new Animal { Name = name, Color = color , Age = age};
-            animals.Add(createdAnimal);
-            //return CreatedAtAction("CreateAnimal", createdAnimal); 
-            return Ok();
+            Animal createdAnimal = new Animal { Name = name, Color = color , Age = age, Id = Guid.NewGuid() };
+            Animals.Add(createdAnimal);
+            return CreatedAtAction("CreateAnimal", createdAnimal); 
+            //return Ok();
             
         }
         
