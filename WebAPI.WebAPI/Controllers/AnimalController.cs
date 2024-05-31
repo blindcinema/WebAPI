@@ -72,6 +72,28 @@ namespace WebAPI.WebAPI.Controllers
             //return Ok();
             
         }
+        [HttpPut(Name = "PutAnimal")]
+        public ActionResult<Animal> PutAnimal(Animal animal, string name, string color, int age, Guid Id)
+        {
+            try
+            {   //currently just adds, fix to update if animal matches a key
+                if (Animals.Any())
+                {
+                    animal.Name = name;
+                    animal.Color = color;
+                    animal.Age = age;
+                    return Ok();
+
+                }
+                else
+                {
+                    return new ObjectResult(StatusCode(400));
+                }
+            }
+            catch (Exception ex)
+            { return StatusCode(500, ex);
+            }
+        }
         
      }
 }
